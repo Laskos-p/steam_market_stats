@@ -1,4 +1,5 @@
 import requests
+import json
 
 # get items for game=appid as json
 url = "https://steamcommunity.com/market/search/render/"
@@ -12,5 +13,8 @@ payload = {
 }
 
 
-f = requests.get(url, params=payload)
-print(f.json())
+data = requests.get(url, params=payload)
+data_json = data.json()
+
+with open("api/data.json", "w") as f:
+    f.write(json.dumps(data_json, indent=4))
