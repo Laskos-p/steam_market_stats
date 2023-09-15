@@ -1,7 +1,5 @@
 # This is web app for getting data from steam market with better functionality
 
----
-
 ## Quickstart
 First you need to install requirements:
 ```
