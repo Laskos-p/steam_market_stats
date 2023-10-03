@@ -4,7 +4,7 @@ url = "https://steamcommunity.com/market/search/render/"
 
 
 # get items for game=appid as json
-def get_data_json(
+async def get_data_json(
     appid,
     search_description=0,
     sort_column="default",
@@ -34,7 +34,7 @@ def get_data_json(
 # print(data)
 
 
-def filter_data(data: dict, filter_keys: list):
+async def filter_data(data: dict, filter_keys: list):
     filtered_data = []
     item_keys = []
     item_description_keys = []
