@@ -14,3 +14,8 @@ def add_item_data(appid):
         session.execute(insert(Item), data_filtered)
         session.commit()
     return data
+
+
+def get_items(db: Session, limit: int = 100):
+    items = db.query(Item).limit(limit).all()
+    return items
