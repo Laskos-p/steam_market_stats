@@ -1,8 +1,6 @@
-from datetime import datetime
-
 from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
