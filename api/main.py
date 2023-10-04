@@ -1,10 +1,9 @@
 import asyncio
 from contextlib import asynccontextmanager
-from time import sleep, time_ns
+from time import time_ns
 from typing import Annotated
 
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query
-from fastapi.concurrency import run_in_threadpool
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
