@@ -1,5 +1,3 @@
-import json
-
 import requests
 
 url = "https://steamcommunity.com/market/search/render/"
