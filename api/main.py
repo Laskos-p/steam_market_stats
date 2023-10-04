@@ -1,6 +1,6 @@
 import asyncio
 from contextlib import asynccontextmanager
-from time import sleep
+from time import sleep, time_ns
 from typing import Annotated
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query
@@ -13,11 +13,18 @@ from .database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     pass
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # run task before app startup
+    task = asyncio.create_task(fetch_data())
+    # run app
+    yield
+    # on shutdown close task
+    task.cancel()
+
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000",
@@ -31,29 +38,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# crud.add_item_data(730)
-
-global task
-
 
 async def fetch_data():
     while True:
         print("Fetching data...")
+        time = time_ns()
         await crud.add_item_data(730)
-        print("Data fetched")
+        print(f"Data fetched {time_ns() - time/10**9} s")
         await asyncio.sleep(30)
 
 
-@app.on_event("startup")
-async def startup():
-    global task
-    task = asyncio.create_task(fetch_data())
-
-
-@app.on_event("shutdown")
-def shutdown():
-    global task
-    task.cancel()
+# deprecated
+# global task
+# @app.on_event("startup")
+# async def startup():
+#     global task
+#     task = asyncio.create_task(fetch_data())
+#
+#
+# @app.on_event("shutdown")
+# def shutdown():
+#     global task
+#     task.cancel()
 
 
 @app.get("/")
