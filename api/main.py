@@ -17,6 +17,9 @@ models.Base.metadata.create_all(bind=engine)
 async def lifespan(app: FastAPI):
     # run task before app startup
     task = asyncio.create_task(fetch_data())
+    # await task
+    # ex = task.exception()
+    # print(f"Task exception: {ex}")
     # run app
     yield
     # on shutdown close task
@@ -43,8 +46,8 @@ async def fetch_data():
         print("Fetching data...")
         time = time_ns()
         await crud.add_item_data(730)
-        print(f"Data fetched {time_ns() - time/10**9} s")
-        await asyncio.sleep(30)
+        print(f"Data fetched {(time_ns() - time)/10**9} s")
+        await asyncio.sleep(10)
 
 
 # deprecated
@@ -68,6 +71,7 @@ async def read_root():
 
 @app.get("/items", response_model=list[schemas.ItemDB])
 def get_items(limit: Annotated[int, Query()] = 100, db: Session = Depends(get_db)):
+    print("dziala")
     items = crud.get_items(db, limit)
     print("co jest")
     if not items:
