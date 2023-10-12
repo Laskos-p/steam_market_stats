@@ -10,6 +10,7 @@ async def get_data_json(
     sort_column="default",
     sort_dir="desc",
     norender=1,
+    start=0,
     count=100,
 ):
     payload = {
@@ -18,6 +19,7 @@ async def get_data_json(
         "sort_column": sort_column,
         "sort_dir": sort_dir,
         "norender": norender,
+        "start": start,
         "count": count,
     }
     f = requests.get(url, params=payload)
@@ -68,26 +70,67 @@ async def filter_data(data: dict, filter_keys: list):
 
 async def split_name(full_name: str):
     """
-    Split name into name, weapon, StatTrak, quality
+    Split name into full_name, name, weapon, StatTrak, quality
     :param full_name: Full name of item
-    :return: {name: name, weapon: weapon, stattrak: stattrak, quality: quality}
+    :return: {full_name: full_name, name: name, weapon: weapon, stattrak: stattrak, quality: quality}
     """
     if "|" not in full_name:
         return {
-            "name": full_name,
-            "weapon": "Invalid",
+            "full_name": full_name,
+            "name": "",
+            "weapon": "",
             "stattrak": False,
-            "quality": "Invalid",
+            "quality": "",
         }
-    weapon, name = full_name.strip().split(" | ")
-    stattrak = False
-    if "StatTrak" in weapon:
-        weapon = weapon[10:]
-        stattrak = True
-    name, quality = name.split(" (")
-    quality = quality[:-1]
-    return {"name": name, "weapon": weapon, "stattrak": stattrak, "quality": quality}
+    if (
+        "Sticker" in full_name
+        or "Graffiti" in full_name
+        or "Capsule" in full_name
+        or "Patch" in full_name
+    ):
+        return {
+            "full_name": full_name,
+            "name": "",
+            "weapon": "",
+            "stattrak": False,
+            "quality": "",
+        }
+    try:
+        weapon, name = full_name.strip().split(" | ")
+        stattrak = False
+        if "StatTrak" in weapon:
+            weapon = weapon.replace("StatTrak™ ", "")
+            stattrak = True
+
+        if "(" in name:
+            split = name.split(" (")
+            if len(split) == 3:
+                split = name.split(" (")
+                name = split[0] + " " + split[1]
+                quality = split[2][:-1]
+            else:
+                name = split[0]
+                quality = split[1][:-1]
+        else:
+            quality = ""
+
+    except Exception as e:
+        print(e)
+        print(full_name.encode("utf-8"))
+        name = "ERROR"
+        quality = "ERROR"
+        weapon = "ERROR"
+        stattrak = False
+
+    return {
+        "full_name": full_name,
+        "name": name,
+        "weapon": weapon,
+        "stattrak": stattrak,
+        "quality": quality,
+    }
 
 
+# print(split_name("StatTrak™ M4A4 | 龍王 (Dragon King) (Field-Tested)"))
 # db_columns = ["name", "sell_listings", "sell_price", "icon_url", "appid"]
 # print(filter_data(data, db_columns)[0])

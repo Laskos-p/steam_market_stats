@@ -1,6 +1,5 @@
 from sqlalchemy import Boolean, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
@@ -19,6 +18,7 @@ class Item(Base):
     __tablename__ = "items"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    full_name: Mapped[str] = mapped_column(String, unique=True)
     name: Mapped[str] = mapped_column(String)
     weapon: Mapped[str] = mapped_column(String)
     stattrak: Mapped[bool] = mapped_column(Boolean)
@@ -32,5 +32,5 @@ class Item(Base):
     )
     game: Mapped[list["Game"]] = relationship("Game")
     updated_at: Mapped[str] = mapped_column(
-        TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp()
+        TIMESTAMP, server_default=func.now(), onupdate=func.now()
     )

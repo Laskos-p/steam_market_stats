@@ -10,6 +10,8 @@ export default function Items() {
                         return response.json()
                     }
                     throw response;
+                }, error => {
+                    console.log(error);
                 }
             )
             .then(
@@ -30,10 +32,7 @@ export default function Items() {
                         />
                         <div className="item-info">
                             <div className="item-name">
-                                {item.stattrak && "StatTrak™ "}
-                                {item.weapon}
-                                {" | " + item.name}
-                                {" (" + item.quality+")"}
+                                {item.full_name}
                             </div>
                             <div className="item-price-info">
                                 <span className="item-price-label">Price</span>

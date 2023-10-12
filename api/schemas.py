@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class ItemDB(BaseModel):
     id: int
+    full_name: str
     name: str
     weapon: str
     stattrak: bool
