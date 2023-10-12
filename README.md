@@ -28,3 +28,10 @@ Then run uvicorn:
 ```
 uvicorn api.main:app --reload
 ```
+
+### pre-commit
+
+To install pre-commit run:
+```
+pre-commit install
+```
