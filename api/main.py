@@ -71,9 +71,7 @@ async def read_root():
 
 @app.get("/items", response_model=list[schemas.ItemDB])
 def get_items(limit: Annotated[int, Query()] = 100, db: Session = Depends(get_db)):
-    print("dziala")
     items = crud.get_items(db, limit)
-    print("co jest")
     if not items:
         raise HTTPException(status_code=400, detail="There are no items")
     return items
