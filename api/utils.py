@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import requests
 
 url = "https://steamcommunity.com/market/search/render/"
@@ -23,6 +25,7 @@ async def get_data_json(
         "count": count,
     }
     f = requests.get(url, params=payload)
+    # print(f.url)
     return f.json()
 
 
@@ -62,6 +65,7 @@ async def filter_data(data: dict, filter_keys: list):
             await split_name(result["name"])
             | {key: result[key] for key in item_keys}
             | {key: result["asset_description"][key] for key in item_description_keys}
+            | {"updated_at": datetime.now()}
         )
         # print(filtered_data)
 
