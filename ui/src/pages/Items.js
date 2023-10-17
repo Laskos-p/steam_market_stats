@@ -48,10 +48,8 @@ export default function Items() {
                             </div>
                             <div className="link-to-steam">
                                 <a href={"https://steamcommunity.com/market/listings/730/" +
-                                    (item.stattrak ? "StatTrak™ " : "") +
-                                    item.weapon +
-                                    " | " + item.name +
-                                    " (" + item.quality+")"}>Link to item on steam</a>
+                                    (item.full_name)}
+                                >Link to item on steam</a>
                             </div>
                         </div>
                     </li>
