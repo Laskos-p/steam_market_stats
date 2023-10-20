@@ -9,8 +9,11 @@ from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
 from .database import engine, get_db
+from .games import models as game_model
+from .games.router import router as games_router
 
 models.Base.metadata.create_all(bind=engine)
+game_model.Base.metadata.create_all(bind=engine)
 
 
 @asynccontextmanager
@@ -27,6 +30,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(games_router)
 
 origins = [
     "http://localhost:3000",
@@ -47,7 +52,7 @@ async def fetch_data():
         time = time_ns()
         await crud.add_item_data(730)
         print(f"Data fetched {(time_ns() - time)/10**9} s")
-        await asyncio.sleep(10)
+        await asyncio.sleep(7)
 
 
 # deprecated

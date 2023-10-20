@@ -1,17 +1,9 @@
 from sqlalchemy import Boolean, ForeignKey, Identity, Integer, String
-from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
-Base = declarative_base()
-
-
-class Game(Base):
-    __tablename__ = "games"
-
-    appid: Mapped[int] = mapped_column(primary_key=True)
-    game_name: Mapped[str] = mapped_column(String)
-    total_item_count: Mapped[int] = mapped_column(Integer)
+from .database import Base
 
 
 class Item(Base):
