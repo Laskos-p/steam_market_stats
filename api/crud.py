@@ -1,9 +1,9 @@
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from .database import engine
-from .models import Game, Item
+from .models import Item
 from .utils import filter_data, get_data_json
 
 # building = True
@@ -87,8 +87,6 @@ async def add_item_data(appid: int):
 
     data = await get_data_json(appid, start=start, sort_column="name", sort_dir="asc")
 
-    steam_total_count = data["total_count"]
-
     if not data:
         print("Error: request failed")
         last_error = True
@@ -101,13 +99,15 @@ async def add_item_data(appid: int):
         if data["total_count"] < start:
             building = False
         return data
+
+    last_error = False
+    steam_total_count = data["total_count"]
+
     if len(data["results"]) < 100:
         print("less than 100")
         building = False
         last_updated = False
         return data
-
-    last_error = False
 
     filter_keys = ["name", "sell_listings", "sell_price", "icon_url", "appid"]
     data_filtered = await filter_data(data, filter_keys)
@@ -160,6 +160,19 @@ def set_item_alphabetical_order(only_listed: bool = False):
             ) t WHERE t.id = items.id
             """
         )
+        # update_stmt = (
+        #     update(Item)
+        #     .values(alphabetical_order=(
+        #         select([
+        #             func.row_number().over(
+        #                 order_by=func.lower(Item.full_name).collate("C")
+        #             )
+        #         ])
+        #         .where(Item.is_listed == only_listed)
+        #         .label()
+        #     ))
+        #     .where
+
         session.execute(update)
         session.commit()
     return "done"
