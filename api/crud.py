@@ -6,10 +6,10 @@ from .database import engine
 from .models import Item
 from .utils import filter_data, get_data_json
 
-# building = True
+building = True
 last_item = 0
 last_error = False
-# last_updated = True
+selected_item_updated = True
 steam_total_count = 0
 
 
@@ -61,28 +61,30 @@ def set_item_listing(full_name: str, is_listed: bool = False):
 
 
 async def add_item_data(appid: int):
-    global last_item, steam_total_count, last_error
-    # global building, last_error, steam_total_count, last_updated, last_item
-    # if building:
-    #     with Session(engine) as session:
-    #         start = session.query(Item).count()
-    #         last_item = start
-    # else:
-    #     start = get_oldest_item_id(only_listed=True).id
-    #     if not last_error and not last_updated:
-    #         start = last_item - 100
-    #     else:
-    #         last_item = start
-    #
-    # start = max(0, min(start, steam_total_count - 100))
+    global last_item, steam_total_count, last_error, building, selected_item_updated
+    oldest_item_name = ""
+    if building:
+        with Session(engine) as session:
+            start = session.query(Item).count()
+            last_item = start
+    else:
+        oldest_item = get_oldest_item_id(only_listed=True)
+        start = oldest_item.alphabetical_order
+        oldest_item_name = oldest_item.full_name
+        if not last_error and not selected_item_updated:
+            start = last_item - 100
+        else:
+            last_item = start
+
+    start = max(0, min(start, steam_total_count - 100))
 
     # simple version for updating items
-    start = last_item
-    if start >= steam_total_count - 100 and not last_error:
-        start = max(0, steam_total_count - 100)
-        last_item = 0
-    elif not last_error:
-        last_item += 100
+    # start = last_item
+    # if start >= steam_total_count - 100 and not last_error:
+    #     start = max(0, steam_total_count - 100)
+    #     last_item = 0
+    # elif not last_error:
+    #     last_item += 100
     print("Updating items from: " + str(start) + " to: " + str(start + 100))
 
     data = await get_data_json(appid, start=start, sort_column="name", sort_dir="asc")
@@ -90,12 +92,12 @@ async def add_item_data(appid: int):
     if not data:
         print("Error: request failed")
         last_error = True
-        last_updated = False
+        selected_item_updated = False
         return data
     if not data["results"]:
         print("Error: no data")
         last_error = True
-        last_updated = False
+        selected_item_updated = False
         if data["total_count"] < start:
             building = False
         return data
@@ -106,7 +108,7 @@ async def add_item_data(appid: int):
     if len(data["results"]) < 100:
         print("less than 100")
         building = False
-        last_updated = False
+        selected_item_updated = False
         return data
 
     filter_keys = ["name", "sell_listings", "sell_price", "icon_url", "appid"]
@@ -144,6 +146,11 @@ async def add_item_data(appid: int):
         if item.full_name not in request_full_names:
             set_item_listing(item.full_name, False)
 
+    if oldest_item_name not in request_full_names:
+        print("Didn't update this item ")
+        selected_item_updated = False
+    else:
+        selected_item_updated = True
     return data
 
 
