@@ -1,11 +1,10 @@
 from datetime import datetime
 
-import requests
+import httpx
 
 url = "https://steamcommunity.com/market/search/render/"
 
 
-# get items for game=appid as json
 async def get_data_json(
     appid,
     search_description=0,
@@ -24,17 +23,20 @@ async def get_data_json(
         "start": start,
         "count": count,
     }
-    f = requests.get(url, params=payload)
-    # print(f.url)
-    return f.json()
 
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url, params=payload)
+        except Exception as e:
+            print("Error fetching data:", e)
+            return None
 
-# from collections import deque
-# import json
-#
-#
-# with open("data.json", "r") as f:
-#     data = json.load(f)
+        if response.status_code != 200:
+            print(response.status_code)
+            response.raise_for_status()
+            return None
+
+        return response.json()
 
 
 async def filter_data(data: dict, filter_keys: list):

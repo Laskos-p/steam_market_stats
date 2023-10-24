@@ -1,3 +1,6 @@
+import asyncio
+from time import time_ns
+
 from sqlalchemy import func, select, text, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
@@ -5,12 +8,6 @@ from sqlalchemy.orm import Session
 from .database import engine
 from .models import Item
 from .utils import filter_data, get_data_json
-
-building = True
-last_item = 0
-last_error = False
-selected_item_updated = True
-steam_total_count = 0
 
 
 def get_oldest_item_id(only_listed: bool = False):
@@ -30,10 +27,6 @@ def get_oldest_item_id(only_listed: bool = False):
             )
     print(oldest_item.full_name.encode("utf-8"))
     return oldest_item
-
-
-# print(get_oldest_item_id().id)
-# print("cos")
 
 
 def get_item_by_full_name(full_name: str):
@@ -60,59 +53,66 @@ def set_item_listing(full_name: str, is_listed: bool = False):
     return
 
 
-async def add_item_data(appid: int):
-    global last_item, steam_total_count, last_error, building, selected_item_updated
-    oldest_item_name = ""
+async def add_item_data(
+    appid: int,
+    last_item: int = 0,
+    steam_total_count: int = 0,
+    last_error: bool = False,
+    building: bool = True,
+    oldest_item_name: str = "",
+):
     if building:
         with Session(engine) as session:
             start = session.query(Item).count()
             last_item = start
+        print(start, steam_total_count)
+        if start > steam_total_count != 0:
+            building = False
+            return last_item, steam_total_count, last_error, building, oldest_item_name
+    elif last_error:
+        start = last_item
     else:
         oldest_item = get_oldest_item_id(only_listed=True)
         start = oldest_item.alphabetical_order
-        oldest_item_name = oldest_item.full_name
-        if not last_error and not selected_item_updated:
-            start = last_item - 100
+        if not last_error and oldest_item_name == oldest_item.full_name:
+            last_item -= 100
+            start = last_item
         else:
             last_item = start
 
-    start = max(0, min(start, steam_total_count - 100))
+        oldest_item_name = oldest_item.full_name
 
-    # simple version for updating items
-    # start = last_item
-    # if start >= steam_total_count - 100 and not last_error:
-    #     start = max(0, steam_total_count - 100)
-    #     last_item = 0
-    # elif not last_error:
-    #     last_item += 100
-    print("Updating items from: " + str(start) + " to: " + str(start + 100))
+    start = max(0, min(start, steam_total_count))
 
+    print("Updating items from: " + str(start))
+
+    time = time_ns()
     data = await get_data_json(appid, start=start, sort_column="name", sort_dir="asc")
-
+    print(f"Got data in: {(time_ns() - time)/10**9} s")
     if not data:
-        print("Error: request failed")
+        print("Error: request empty")
         last_error = True
-        selected_item_updated = False
-        return data
-    if not data["results"]:
-        print("Error: no data")
-        last_error = True
-        selected_item_updated = False
-        if data["total_count"] < start:
-            building = False
-        return data
+        return last_item, steam_total_count, last_error, building, oldest_item_name
 
-    last_error = False
     steam_total_count = data["total_count"]
 
+    if not data["results"]:
+        print("Error: request results empty")
+        last_error = True
+        return last_item, steam_total_count, last_error, building, oldest_item_name
+
+    last_error = False
+
     if len(data["results"]) < 100:
-        print("less than 100")
+        print("Less than 100 results")
         building = False
-        selected_item_updated = False
-        return data
+        return last_item, steam_total_count, last_error, building, oldest_item_name
 
     filter_keys = ["name", "sell_listings", "sell_price", "icon_url", "appid"]
+
+    time = time_ns()
     data_filtered = await filter_data(data, filter_keys)
+    print(f"Filtered data in: {(time_ns() - time)/10**9} s")
 
     with Session(engine) as session:
         stmt = (
@@ -140,52 +140,47 @@ async def add_item_data(appid: int):
         get_item_by_full_name(request_full_names[0]).alphabetical_order,
         get_item_by_full_name(request_full_names[-1]).alphabetical_order,
     )
-    if len(request_full_names) != len(database_full_names):
-        print("updated some items")
+
     for item in database_full_names:
         if item.full_name not in request_full_names:
             set_item_listing(item.full_name, False)
 
-    if oldest_item_name not in request_full_names:
-        print("Didn't update this item ")
-        selected_item_updated = False
-    else:
-        selected_item_updated = True
-    return data
+    return last_item, steam_total_count, last_error, building, oldest_item_name
 
 
 def set_item_alphabetical_order(only_listed: bool = False):
     with Session(engine) as session:
-        update = text(
-            f"""
-            UPDATE items
-            SET alphabetical_order = t.rn
-            FROM (
-                SELECT id, ROW_NUMBER() OVER (ORDER BY lower(full_name) collate "C") AS rn
-                FROM items
-                WHERE is_listed = {only_listed}
-            ) t WHERE t.id = items.id
-            """
-        )
-        # update_stmt = (
-        #     update(Item)
-        #     .values(alphabetical_order=(
-        #         select([
-        #             func.row_number().over(
-        #                 order_by=func.lower(Item.full_name).collate("C")
-        #             )
-        #         ])
-        #         .where(Item.is_listed == only_listed)
-        #         .label()
-        #     ))
-        #     .where
+        # update = text(
+        #     f"""
+        #     UPDATE items
+        #     SET alphabetical_order = t.rn
+        #     FROM (
+        #         SELECT id, ROW_NUMBER() OVER (ORDER BY lower(full_name) collate "C") AS rn
+        #         FROM items
+        #         WHERE is_listed = {only_listed}
+        #     ) t WHERE t.id = items.id
+        #     """
+        # )
 
-        session.execute(update)
+        subquery = (
+            select(
+                Item.id,
+                func.row_number()
+                .over(order_by=func.lower(Item.full_name).collate("C"))
+                .label("rn"),
+            ).where(Item.is_listed == only_listed)
+        ).alias("subquery")
+
+        update_stmt = (
+            update(Item)
+            .values(alphabetical_order=subquery.c.rn)
+            .where(subquery.c.id == Item.id)
+        )
+        # print(str(update_stmt))
+
+        session.execute(update_stmt)
         session.commit()
     return "done"
-
-
-# print(set_item_alphabetical_order())
 
 
 def get_items(db: Session, limit: int = 100):

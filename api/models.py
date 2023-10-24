@@ -4,15 +4,14 @@ from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
 from .database import Base
+from .games.models import Game
 
 
 class Item(Base):
     __tablename__ = "items"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    alphabetical_order: Mapped[int] = mapped_column(
-        Integer, Identity(start=1), unique=True
-    )
+    alphabetical_order: Mapped[int] = mapped_column(Integer, Identity(start=1))
     full_name: Mapped[str] = mapped_column(String, unique=True)
     name: Mapped[str] = mapped_column(String)
     weapon: Mapped[str] = mapped_column(String)
@@ -27,6 +26,4 @@ class Item(Base):
         Integer, ForeignKey("games.appid", ondelete="CASCADE"), nullable=False
     )
     game: Mapped[list["Game"]] = relationship("Game")
-    updated_at: Mapped[str] = mapped_column(
-        TIMESTAMP, server_default=func.now(), onupdate=func.now()
-    )
+    updated_at: Mapped[str] = mapped_column(TIMESTAMP, server_default=func.now())
