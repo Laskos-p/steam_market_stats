@@ -1,23 +1,17 @@
-from sqlalchemy import Boolean, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
+from sqlalchemy import Boolean, ForeignKey, Identity, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
-Base = declarative_base()
-
-
-class Game(Base):
-    __tablename__ = "games"
-
-    appid: Mapped[int] = mapped_column(primary_key=True)
-    game_name: Mapped[str] = mapped_column(String)
-    total_item_count: Mapped[int] = mapped_column(Integer)
+from .database import Base
+from .games.models import Game
 
 
 class Item(Base):
     __tablename__ = "items"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    alphabetical_order: Mapped[int] = mapped_column(Integer, Identity(start=1))
     full_name: Mapped[str] = mapped_column(String, unique=True)
     name: Mapped[str] = mapped_column(String)
     weapon: Mapped[str] = mapped_column(String)
@@ -26,11 +20,10 @@ class Item(Base):
     sell_listings: Mapped[int] = mapped_column(Integer)
     sell_price: Mapped[int] = mapped_column(Integer)
     icon_url: Mapped[str] = mapped_column(String)
+    is_listed: Mapped[bool] = mapped_column(Boolean, default=True)
 
     appid: Mapped[int] = mapped_column(
         Integer, ForeignKey("games.appid", ondelete="CASCADE"), nullable=False
     )
     game: Mapped[list["Game"]] = relationship("Game")
-    updated_at: Mapped[str] = mapped_column(
-        TIMESTAMP, server_default=func.now(), onupdate=func.now()
-    )
+    updated_at: Mapped[str] = mapped_column(TIMESTAMP, server_default=func.now())

@@ -2,4 +2,11 @@
 *.env
 
 # ignore virtual environment
+/env/
 /venv/
+
+# ignore node modules
+/ui/node_modules/
+
+# ignore local db
+*.db

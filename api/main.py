@@ -9,24 +9,33 @@ from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
 from .database import engine, get_db
+from .games import models as game_model
+from .games.crud import add_game_data
+from .games.router import router as games_router
 
 models.Base.metadata.create_all(bind=engine)
+game_model.Base.metadata.create_all(bind=engine)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # run task before app startup
     task = asyncio.create_task(fetch_data())
-    # await task
-    # ex = task.exception()
-    # print(f"Task exception: {ex}")
-    # run app
-    yield
-    # on shutdown close task
-    task.cancel()
+
+    try:
+        yield
+    finally:
+        # on shutdown close task
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(games_router)
 
 origins = [
     "http://localhost:3000",
@@ -42,26 +51,14 @@ app.add_middleware(
 
 
 async def fetch_data():
+    args = ()
+    await add_game_data(730)
     while True:
         print("Fetching data...")
         time = time_ns()
-        await crud.add_item_data(730)
+        args = await crud.add_item_data(730, *args)
         print(f"Data fetched {(time_ns() - time)/10**9} s")
         await asyncio.sleep(10)
-
-
-# deprecated
-# global task
-# @app.on_event("startup")
-# async def startup():
-#     global task
-#     task = asyncio.create_task(fetch_data())
-#
-#
-# @app.on_event("shutdown")
-# def shutdown():
-#     global task
-#     task.cancel()
 
 
 @app.get("/")
@@ -71,9 +68,7 @@ async def read_root():
 
 @app.get("/items", response_model=list[schemas.ItemDB])
 def get_items(limit: Annotated[int, Query()] = 100, db: Session = Depends(get_db)):
-    print("dziala")
     items = crud.get_items(db, limit)
-    print("co jest")
     if not items:
         raise HTTPException(status_code=400, detail="There are no items")
     return items
