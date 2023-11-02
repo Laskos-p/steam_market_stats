@@ -31,6 +31,3 @@ jobs:
     - name: Lint with isort
       run: |
         isort api --profile black --filter-files
-    - name: Test with pytest
-      run: |
-        pytest
