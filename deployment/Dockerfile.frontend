@@ -1,11 +1,11 @@
-FROM node:16.11.1
+FROM node:21-alpine
 
 WORKDIR /app
 
-COPY package.json .
+COPY ./ui/package.json .
 RUN npm install
 
-COPY . .
+COPY ./ui .
 
 EXPOSE 3000
 
