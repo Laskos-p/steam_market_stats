@@ -2,6 +2,7 @@
 
 ## About project
 This is web app for getting data from steam market with ability to track prices of items.
+It is currently in development.
 
 ## Getting Started
 
