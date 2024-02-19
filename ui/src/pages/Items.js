@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 export default function Items() {
     const [data, setData] = useState(null);
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/items", {method: "GET"})
+        fetch("http://127.0.0.1:8080/items", {method: "GET"})
             .then(
                 response => {
                     if (response.ok) {

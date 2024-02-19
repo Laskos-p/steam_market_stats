@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 export default function Games() {
     const [data, setData] = useState(null);
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/games/", {method: "GET"})
+        fetch("http://127.0.0.1:8080/games/", {method: "GET"})
             .then(
                 response => {
                     if (response.ok) {
