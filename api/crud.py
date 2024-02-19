@@ -94,13 +94,12 @@ async def add_item_data(
         last_error = True
         return last_item, steam_total_count, last_error, building, oldest_item_name
 
-    steam_total_count = data["total_count"]
-
     if not data["results"]:
         print("Error: request results empty")
         last_error = True
         return last_item, steam_total_count, last_error, building, oldest_item_name
 
+    steam_total_count = data["total_count"]
     last_error = False
 
     if len(data["results"]) < 100:

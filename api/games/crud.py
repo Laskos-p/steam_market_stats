@@ -56,7 +56,13 @@ async def add_game_data(appid: int):
 
 async def update_game_listed_unique_items(appid: int):
     data_json = await get_data_json(appid, count=1)
-    listed_unique_items = data_json["total_count"]
+    try:
+        listed_unique_items = data_json["total_count"]
+    except Exception as e:
+        print(e)
+        return
+    # listed_unique_items = data_json["total_count"]
+
     with Session(engine) as session:
         stmt = (
             update(Game)
