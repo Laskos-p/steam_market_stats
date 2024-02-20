@@ -6,29 +6,14 @@ It is currently in development.
 
 ## Getting Started
 
-### Frontend
+### Docker
 
-First you need to install node modules:
-```
-npm install
-```
+Run docker and then type in terminal:
 
-Then run:
 ```
-npm start
+docker compose up --build
 ```
 
-### Backend
-
-First you need to install requirements:
-```
-pip install -r requirements.txt
-```
-
-Then run uvicorn:
-```
-uvicorn api.main:app --reload
-```
 
 ### pre-commit
 

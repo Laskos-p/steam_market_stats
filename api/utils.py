@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import httpx
+import aiohttp
 
 url = "https://steamcommunity.com/market/search/render/"
 
@@ -24,19 +24,21 @@ async def get_data_json(
         "count": count,
     }
 
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as client:
         try:
             response = await client.get(url, params=payload)
+
         except Exception as e:
             print("Error fetching data:", e)
             return None
 
-        if response.status_code != 200:
-            print(response.status_code)
+        if response.status != 200:
+            print("To many requests")
+            print(response.status)
             response.raise_for_status()
             return None
 
-        return response.json()
+        return await response.json()
 
 
 async def filter_data(data: dict, filter_keys: list):
