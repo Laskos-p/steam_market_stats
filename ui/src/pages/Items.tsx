@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 
 export default function Items() {
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<Array<unknown>>([]);
     useEffect(() => {
         fetch("http://127.0.0.1:8080/items", {method: "GET"})
             .then(
@@ -24,31 +24,31 @@ export default function Items() {
         <>
             <h1>Items</h1>
             <ul className="items">
-                {data && data.map(item => (
+                {data && data.map((item: unknown) => (
                     <li key={crypto.randomUUID()}>
                         <img
-                            src={"https://community.akamai.steamstatic.com/economy/image/" + item.icon_url}
+                            src={"https://community.akamai.steamstatic.com/economy/image/" + (item as {icon_url: string}).icon_url}
                             alt="logo"
                         />
                         <div className="item-info">
                             <div className="item-name">
-                                {item.full_name}
+                                {(item as {full_name: string}).full_name}
                             </div>
                             <div className="item-price-info">
                                 <span className="item-price-label">Price</span>
                                 <span className="item-price">
-                                    {"$" + item.sell_price/100 +" USD"}
+                                    {"$" + (item as {sell_price: number}).sell_price/100 +" USD"}
                                 </span>
                             </div>
                             <div className="item-quantity-info">
                                 <span className="item-quality-label">Quantity</span>
                                 <span className="item-quantity">
-                                    {item.sell_listings}
+                                    {(item as {sell_listings:number}).sell_listings}
                                 </span>
                             </div>
                             <div className="link-to-steam">
                                 <a href={"https://steamcommunity.com/market/listings/730/" +
-                                    (item.full_name)}
+                                    (item as { full_name: string }).full_name}
                                 >Link to item on steam</a>
                             </div>
                         </div>
