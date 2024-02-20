@@ -1,4 +1,3 @@
-import Button from "../Button/button";
 import { Link, useMatch, useResolvedPath } from "react-router-dom";
 
 const Navbar = () => {
@@ -18,16 +17,22 @@ const Navbar = () => {
     )
 }
 
-function CustomLink({ to, children, ...props }) {
-    const resolvedPath = useResolvedPath(to)
-    const isActive = useMatch({ path: resolvedPath.pathname, end: true })
+type CustomLinkProps = {
+    to: string;
+    children: React.ReactNode;
+    props?: React.HTMLProps<HTMLLIElement>;
+};
+
+function CustomLink({ to, children, ...props }: CustomLinkProps) {
+    const resolvedPath = useResolvedPath(to);
+    const isActive = useMatch({ path: resolvedPath.pathname, end: true });
     return (
         <li className={isActive ? "active" : ""}>
             <Link to={to} {...props}>
                 {children}
             </Link>
         </li>
-    )
+    );
 }
 
 export default Navbar

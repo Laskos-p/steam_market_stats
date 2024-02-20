@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 
 export default function Games() {
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<Array<unknown>>([]);
     useEffect(() => {
         fetch("http://127.0.0.1:8080/games/", {method: "GET"})
             .then(
@@ -24,15 +24,15 @@ export default function Games() {
         <>
             <h1>Games</h1>
             <ul className="games">
-                {data && data.map(game => (
+                {data && data.map((game: unknown) => (
                     <li key={crypto.randomUUID()}>
                         <img
-                            src={game.header_image}
+                            src={(game as { header_image: string }).header_image}
                             alt="logo"
                         />
                         <div className="game">
                             <div className="game-name">
-                                {game.name}
+                                {(game as { name: string }).name}
                             </div>
                         </div>
                     </li>

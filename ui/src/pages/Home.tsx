@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Home() {
 //   class MyComponent extends React.Component {
 //     constructor(props) {
