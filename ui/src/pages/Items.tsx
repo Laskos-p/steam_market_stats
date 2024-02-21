@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import React from "react";
 
 export default function Items() {
   const [data, setData] = useState<Array<unknown>>([]);

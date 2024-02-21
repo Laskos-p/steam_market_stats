@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar/navbar";
 import Home from "./pages/Home";
 import Games from "./pages/Games";
 import Items from "./pages/Items";
+import React from "react";
 
 export default function App() {
   return (
