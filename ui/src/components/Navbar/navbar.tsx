@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useMatch, useResolvedPath } from "react-router-dom";
+import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -16,11 +16,10 @@ const Navbar = () => {
   );
 };
 
-type CustomLinkProps = {
+interface CustomLinkProps extends LinkProps {
   to: string;
   children: React.ReactNode;
-  props?: React.HTMLProps<HTMLLIElement>;
-};
+}
 
 function CustomLink({ to, children, ...props }: CustomLinkProps) {
   const resolvedPath = useResolvedPath(to);
