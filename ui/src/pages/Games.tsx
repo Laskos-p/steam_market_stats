@@ -29,16 +29,16 @@ export default function Games() {
 
   return (
     <>
-      <h1>Games</h1>
-      {error || (
-        <ul className="games">
+      <h1 className="text-5xl text-white">Games</h1>
+      {error ? (
+        <span className="text-white">{error}</span>
+      ) : (
+        <ul>
           {data &&
             data.map((game: Game) => (
-              <li key={crypto.randomUUID()}>
+              <li key={crypto.randomUUID()} className="grid place-items-center">
                 <img src={game.header_image} alt="logo" />
-                <div className="game">
-                  <div className="game-name">{game.name}</div>
-                </div>
+                <div className="text-white">{game.name}</div>
               </li>
             ))}
         </ul>

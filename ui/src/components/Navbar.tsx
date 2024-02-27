@@ -1,13 +1,14 @@
 import React from "react";
 import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
+import clsx from "clsx/lite";
 
 const Navbar = () => {
   return (
-    <nav className="nav">
-      <Link to="/" className="site-title">
+    <nav className="flex justify-between bg-[#333] px-4 text-white">
+      <Link to="/" className="text-[2rem]">
         Steam Market
       </Link>
-      <ul>
+      <ul className="flex gap-4">
         <CustomLink to="/">Home</CustomLink>
         <CustomLink to="/games">Games</CustomLink>
         <CustomLink to="/items">Items</CustomLink>
@@ -25,8 +26,12 @@ function CustomLink({ to, children, ...props }: CustomLinkProps) {
   const resolvedPath = useResolvedPath(to);
   const isActive = useMatch({ path: resolvedPath.pathname, end: true });
   return (
-    <li className={isActive ? "active" : ""}>
-      <Link to={to} {...props}>
+    <li className={clsx("hover:bg-[#777]", isActive && "bg-[#555]")}>
+      <Link
+        to={to}
+        {...props}
+        className={clsx("grid h-full place-items-center", props.className)}
+      >
         {children}
       </Link>
     </li>

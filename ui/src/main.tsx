@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./components/Navbar/navbar.scss";
-import "./index.scss";
+import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 
