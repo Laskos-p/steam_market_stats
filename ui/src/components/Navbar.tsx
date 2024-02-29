@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
 import clsx from "clsx/lite";
 
@@ -17,12 +16,7 @@ const Navbar = () => {
   );
 };
 
-interface CustomLinkProps extends LinkProps {
-  to: string;
-  children: React.ReactNode;
-}
-
-function CustomLink({ to, children, ...props }: CustomLinkProps) {
+function CustomLink({ to, children, ...props }: LinkProps) {
   const resolvedPath = useResolvedPath(to);
   const isActive = useMatch({ path: resolvedPath.pathname, end: true });
   return (
