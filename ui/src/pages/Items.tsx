@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 interface Item {
   id: number;
@@ -14,27 +14,16 @@ interface Item {
 }
 
 export default function Items() {
-  const [data, setData] = useState<Item[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  async function fetchItems() {
-    const response = await fetch("http://127.0.0.1:8080/items");
-    return (await response.json()) as Item[];
-  }
-
-  useEffect(() => {
-    fetchItems()
-      .then((data) => setData(data))
-      .catch((error: Error) => {
-        setError(error.message);
-      });
-  }, []);
+  const { data, error } = useSWR<Item[], Error>(
+    "http://127.0.0.1:8080/items",
+    (url: string) => fetch(url).then((res) => res.json()),
+  );
 
   return (
     <>
       <h1 className="text-5xl text-white">Items</h1>
       {error ? (
-        <span className="text-white">{error}</span>
+        <span className="text-white">{error.message}</span>
       ) : (
         <ul className="mx-auto w-[65%]">
           {data &&

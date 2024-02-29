@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 interface Game {
   appid: number;
@@ -11,27 +11,16 @@ interface Game {
 }
 
 export default function Games() {
-  const [data, setData] = useState<Game[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  async function fetchItems() {
-    const response = await fetch("http://127.0.0.1:8080/games/");
-    return (await response.json()) as Game[];
-  }
-
-  useEffect(() => {
-    fetchItems()
-      .then((data) => setData(data))
-      .catch((error: Error) => {
-        setError(error.message);
-      });
-  }, []);
+  const { data, error } = useSWR<Game[], Error>(
+    "http://127.0.0.1:8080/games/",
+    (url: string) => fetch(url).then((res) => res.json()),
+  );
 
   return (
     <>
       <h1 className="text-5xl text-white">Games</h1>
       {error ? (
-        <span className="text-white">{error}</span>
+        <span className="text-white">{error.message}</span>
       ) : (
         <ul>
           {data &&
