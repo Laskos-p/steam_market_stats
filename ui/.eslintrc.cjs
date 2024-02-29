@@ -9,6 +9,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "prettier",
+    "plugin:storybook/recommended",
   ],
   overrides: [
     {
