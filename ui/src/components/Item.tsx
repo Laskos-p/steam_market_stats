@@ -23,7 +23,9 @@ export default function Item({ ...item }: ItemInfo) {
         className="object-scale-down lg:w-1/3"
       />
       <div className="grid grow gap-4 md:justify-items-center lg:grid-cols-2 lg:gap-0">
-        <div className="lg:col-span-2">{item.full_name}</div>
+        <div className="lg:col-span-2">
+          <h3>{item.full_name}</h3>
+        </div>
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
           <span>Price</span>
           <span>{"$" + item.sell_price / 100 + " USD"}</span>
