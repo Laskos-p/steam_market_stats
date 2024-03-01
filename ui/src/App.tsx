@@ -6,15 +6,15 @@ import Items from "./pages/Items";
 
 export default function App() {
   return (
-    <>
+    <div className="container mx-auto p-4">
       <Navbar />
-      <div className="bg-[#161920] py-4 text-center">
+      <div className="p-4">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/games" element={<Games />} />
           <Route path="/items" element={<Items />} />
         </Routes>
       </div>
-    </>
+    </div>
   );
 }
