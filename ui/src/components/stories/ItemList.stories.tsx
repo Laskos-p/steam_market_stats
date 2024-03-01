@@ -12,7 +12,7 @@ type Story = StoryObj;
 
 export const Default: Story = {
   render: () => (
-    <ul>
+    <ul className="space-y-4">
       {Array.from({ length: 4 }).map(() => (
         <li key={crypto.randomUUID()}>
           <DefaultItem />

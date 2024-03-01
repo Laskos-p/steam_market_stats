@@ -9,12 +9,12 @@ export default function ItemList() {
   return (
     <>
       {error ? (
-        <span className="text-white">{error.message}</span>
+        <span>{error.message}</span>
       ) : (
-        <ul>
+        <ul role="list" className="space-y-4">
           {data &&
             data.map((item: ItemInfo) => (
-              <li key={item.id}>
+              <li key={item.id} role="listitem">
                 <Item {...item} />
               </li>
             ))}
