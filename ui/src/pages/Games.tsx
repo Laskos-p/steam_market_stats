@@ -18,7 +18,6 @@ export default function Games() {
 
   return (
     <>
-      <h1 className="text-5xl text-white">Games</h1>
       {error ? (
         <span className="text-white">{error.message}</span>
       ) : (

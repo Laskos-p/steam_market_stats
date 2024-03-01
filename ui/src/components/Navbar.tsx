@@ -3,9 +3,9 @@ import clsx from "clsx/lite";
 
 const Navbar = () => {
   return (
-    <nav className="flex justify-between bg-[#333] px-4 text-white">
-      <Link to="/" className="text-[2rem]">
-        Steam Market
+    <nav className="sticky top-0 flex justify-between bg-[#333] px-4 text-white">
+      <Link to="/">
+        <h1>Steam Market</h1>
       </Link>
       <ul className="flex gap-4">
         <CustomLink to="/">Home</CustomLink>
