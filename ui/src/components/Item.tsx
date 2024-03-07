@@ -1,26 +1,16 @@
-export interface ItemInfo {
-  id: number;
-  full_name: string;
-  name: string;
-  weapon: string;
-  stattrak: boolean;
-  quality: string;
-  sell_listings: number;
-  sell_price: number;
-  icon_url: string;
-  appid: number;
-}
+import ItemInfo from "../lib/types/ItemInfo";
 
 export default function Item({ ...item }: ItemInfo) {
   return (
     <div className="mx-auto flex max-w-screen-sm flex-col bg-primary p-4 md:rounded-sm lg:max-w-screen-lg lg:flex-row">
       <img
+        loading="lazy"
         src={
-          "https://community.akamai.steamstatic.com/economy/image/" +
+          "https://community.cloudflare.steamstatic.com/economy/image/" +
           item.icon_url
         }
-        alt="logo"
-        className="object-scale-down lg:w-1/3"
+        alt="item icon"
+        className="aspect-video object-scale-down lg:w-1/3"
       />
       <div className="grid grow gap-4 md:justify-items-center lg:grid-cols-2 lg:gap-0">
         <div className="lg:col-span-2">
