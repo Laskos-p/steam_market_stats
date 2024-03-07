@@ -3,7 +3,7 @@ import ItemInfo from "../types/ItemInfo";
 
 export default function useItems() {
   const { data, error, isLoading } = useSWR<ItemInfo[], Error>(
-    "http://127.0.0.1:8080/iteems",
+    "http://127.0.0.1:8080/items",
     async (url: string) => {
       const response = await fetch(url);
       if (!response.ok)
