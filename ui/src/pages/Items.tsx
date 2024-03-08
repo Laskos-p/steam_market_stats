@@ -1,6 +1,8 @@
-import ItemList from "../components/ItemList";
+import { Suspense, lazy } from "react";
 import Loader from "../components/Loader";
 import useItems from "../lib/utils/useItems";
+
+const ItemList = lazy(() => import("../components/ItemList"));
 
 export default function Items() {
   const { items, error, isLoading } = useItems();
@@ -11,5 +13,9 @@ export default function Items() {
         {error ? <p className="text-red-500">{error.message}</p> : <Loader />}
       </div>
     );
-  return <ItemList data={items ?? []} />;
+  return (
+    <Suspense fallback={<Loader />}>
+      <ItemList data={items ?? []} />
+    </Suspense>
+  );
 }

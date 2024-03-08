@@ -1,18 +1,43 @@
-import { Route, Routes } from "react-router-dom";
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Items from "./pages/Items";
+import Loader from "./components/Loader";
+import { Suspense, lazy } from "react";
+
+const Items = lazy(() => import("./pages/Items"));
+
+const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+        index: true,
+      },
+      {
+        path: "items",
+        element: <Items />,
+      },
+    ],
+  },
+]);
 
 export default function App() {
+  return <RouterProvider router={router} fallbackElement={<Loader />} />;
+}
+
+function Layout() {
   return (
-    <div className="container mx-auto p-4">
-      <Navbar />
-      <div className="p-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/items" element={<Items />} />
-        </Routes>
-      </div>
+    <div className="container mx-auto grid min-h-screen grid-rows-[auto_1fr] gap-4 p-4 ">
+      <header className="sticky top-4">
+        <Navbar />
+      </header>
+      <main>
+        <Suspense fallback={<Loader className="mx-auto" />}>
+          <Outlet />
+        </Suspense>
+      </main>
     </div>
   );
 }
