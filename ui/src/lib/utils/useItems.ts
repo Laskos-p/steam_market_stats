@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import ItemInfo from "../types/ItemInfo";
+import { ItemInfo, ItemInfoSchema } from "../types/ItemInfo";
 
 export default function useItems() {
   const { data, error, isLoading } = useSWR<ItemInfo[], Error>(
@@ -8,11 +8,12 @@ export default function useItems() {
       const response = await fetch(url);
       if (!response.ok)
         throw new Error(
-          `Failed to fetch items from ${url}: ${response.status} ${response.statusText}`,
+          `Failed to fetch items from ${url} - ${response.status} ${response.statusText}`,
         );
-      return response.json();
+      return ItemInfoSchema.array()
+        .nonempty()
+        .parse(await response.json());
     },
   );
-
   return { items: data, error, isLoading };
 }
