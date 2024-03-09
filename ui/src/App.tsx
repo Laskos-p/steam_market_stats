@@ -5,6 +5,7 @@ import Loader from "./components/Loader";
 import { Suspense, lazy } from "react";
 
 const Items = lazy(() => import("./pages/Items"));
+const Item = lazy(() => import("./pages/Item"));
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
       {
         path: "items",
         element: <Items />,
+      },
+      {
+        path: "items/:id",
+        element: <Item />,
       },
     ],
   },

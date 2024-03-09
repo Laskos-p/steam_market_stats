@@ -7,15 +7,17 @@ const ItemList = lazy(() => import("../components/ItemList"));
 export default function Items() {
   const { items, error, isLoading } = useItems();
 
-  if (error || isLoading)
+  if (!items || error || isLoading) {
     return (
       <div className="grid place-items-center">
         {error ? <p className="text-red-500">{error.message}</p> : <Loader />}
       </div>
     );
+  }
+
   return (
-    <Suspense fallback={<Loader />}>
-      <ItemList data={items ?? []} />
+    <Suspense fallback={<Loader className="mx-auto" />}>
+      <ItemList data={items} />
     </Suspense>
   );
 }
