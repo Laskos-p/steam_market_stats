@@ -1,12 +1,25 @@
-export default interface ItemInfo {
-  id: number;
-  full_name: string;
-  name?: string;
-  weapon?: string;
-  stattrak?: boolean;
-  quality?: string;
-  sell_listings: number;
-  sell_price: number;
-  icon_url: string;
-  appid?: number;
-}
+import { z } from "zod";
+
+export const ItemInfoSchema = z
+  .object({
+    id: z.number().safe().nonnegative(),
+    full_name: z.string(),
+    name: z.string(),
+    weapon: z.string(),
+    stattrak: z.boolean(),
+    quality: z.string(),
+    sell_listings: z.number().safe().nonnegative(),
+    sell_price: z.number().safe().nonnegative(),
+    icon_url: z.string(),
+    appid: z.number().safe().nonnegative(),
+  })
+  .partial({
+    name: true,
+    weapon: true,
+    stattrak: true,
+    quality: true,
+    appid: true,
+  })
+  .strict();
+
+export type ItemInfo = z.infer<typeof ItemInfoSchema>;
