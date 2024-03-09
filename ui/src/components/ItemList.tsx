@@ -1,4 +1,4 @@
-import ItemInfo from "../lib/types/ItemInfo";
+import { ItemInfo } from "../lib/types/ItemInfo";
 import Item from "./Item";
 
 export default function ItemList({ data }: { data: ItemInfo[] }) {

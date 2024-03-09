@@ -1,7 +1,7 @@
 import { StoryObj, Meta, composeStories } from "@storybook/react";
 import * as stories from "./Item.stories";
 import ItemList from "../ItemList";
-import ItemInfo from "../../lib/types/ItemInfo";
+import { ItemInfo } from "../../lib/types/ItemInfo";
 
 const { DefaultItem } = composeStories(stories);
 
@@ -11,9 +11,9 @@ export default {
   tags: ["autodocs"],
   args: {
     data: Array.from({ length: 5 }, (_, i) => ({
-      ...(DefaultItem.args as ItemInfo),
       id: i,
-    })),
+      ...DefaultItem.args,
+    })) as ItemInfo[],
   },
 } satisfies Meta<typeof ItemList>;
 
