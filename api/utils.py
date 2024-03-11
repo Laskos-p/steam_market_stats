@@ -49,10 +49,13 @@ async def filter_data(data: dict, filter_keys: list):
     :return: Dict containing keys from filter_keys and their values
     """
     filtered_data = []
+    name_keys = []
     item_keys = []
     item_description_keys = []
     for key in filter_keys:
-        if key in data["results"][0].keys():
+        if key == "full_name" or key == "type":
+            name_keys.append(key)
+        elif key in data["results"][0].keys():
             if key == "name":
                 continue
             item_keys.append(key)
@@ -64,9 +67,17 @@ async def filter_data(data: dict, filter_keys: list):
         # desc_dict = {}
         # for key in item_description_keys:
         #     desc_dict[key] = result["asset_description"][key]
+        # desc = await split_name(result["name"])
+        # for s in desc:
+        #     print(s)
+        # for key, something in (await split_name(result["name"])).items():
+        #     print(something)
+        #     print(type(something))
 
         filtered_data.append(
-            await split_name(result["name"])
+            # await split_name(result["name"])
+            # {"full_name": result["name"]}
+            {key: something for key, something in (await split_name(result["name"])).items() if key in name_keys}
             | {key: result[key] for key in item_keys}
             | {key: result["asset_description"][key] for key in item_description_keys}
             | {"updated_at": datetime.now()}
@@ -82,6 +93,29 @@ async def split_name(full_name: str):
     :param full_name: Full name of item
     :return: {full_name: full_name, name: name, weapon: weapon, stattrak: stattrak, quality: quality}
     """
+    item_type = "other"
+    # match case for stickers, capsules, graffiti, patches
+    match = [
+        "Sticker",
+        "Graffiti",
+        "Capsule",
+        "Music",
+        "Agent",
+        "Case",
+        "Key",
+    ]
+    for m in match:
+        if m in full_name:
+            item_type = m.lower()
+            return {
+                "full_name": full_name,
+                "name": "",
+                "weapon": "",
+                "stattrak": False,
+                "quality": "",
+                "type": item_type,
+            }
+
     if "|" not in full_name:
         return {
             "full_name": full_name,
@@ -89,20 +123,22 @@ async def split_name(full_name: str):
             "weapon": "",
             "stattrak": False,
             "quality": "",
+            "type": item_type,
         }
-    if (
-        "Sticker" in full_name
-        or "Graffiti" in full_name
-        or "Capsule" in full_name
-        or "Patch" in full_name
-    ):
-        return {
-            "full_name": full_name,
-            "name": "",
-            "weapon": "",
-            "stattrak": False,
-            "quality": "",
-        }
+    # if (
+    #     "Sticker" in full_name
+    #     or "Graffiti" in full_name
+    #     or "Capsule" in full_name
+    #     or "Patch" in full_name
+    # ):
+    #     return {
+    #         "full_name": full_name,
+    #         "name": "",
+    #         "weapon": "",
+    #         "stattrak": False,
+    #         "quality": "",
+    #         "type": item_type,
+    #     }
     try:
         weapon, name = full_name.strip().split(" | ")
         stattrak = False
@@ -136,6 +172,7 @@ async def split_name(full_name: str):
         "weapon": weapon,
         "stattrak": stattrak,
         "quality": quality,
+        "type": "weapon",
     }
 
 

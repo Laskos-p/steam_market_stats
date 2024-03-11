@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from .database import engine
-from .models import Item
+from .models import Item, Weapon, PriceHistory
 from .utils import filter_data, get_data_json
 
 
@@ -107,12 +107,16 @@ async def add_item_data(
         building = False
         return last_item, steam_total_count, last_error, building, oldest_item_name
 
-    filter_keys = ["name", "sell_listings", "sell_price", "icon_url", "appid"]
+    # filter_keys = ["name", "sell_listings", "sell_price", "icon_url", "appid"]
+    filter_keys = ["full_name", "type"]
+
 
     time = time_ns()
     data_filtered = await filter_data(data, filter_keys)
     print(f"Filtered data in: {(time_ns() - time)/10**9} s")
+    # print(data_filtered)
 
+    # update items
     with Session(engine) as session:
         stmt = (
             insert(Item)
@@ -120,12 +124,12 @@ async def add_item_data(
             .on_conflict_do_update(
                 index_elements=["full_name"],
                 set_=dict(
-                    sell_listings=insert(Item)
-                    .values(data_filtered)
-                    .excluded.sell_listings,
-                    sell_price=insert(Item).values(data_filtered).excluded.sell_price,
+                    # sell_listings=insert(Item)
+                    # .values(data_filtered)
+                    # .excluded.sell_listings,
+                    # sell_price=insert(Item).values(data_filtered).excluded.sell_price,
                     updated_at=insert(Item).values(data_filtered).excluded.updated_at,
-                    is_listed=True,
+                    # is_listed=True,
                 ),
             )
         )
@@ -163,17 +167,17 @@ def set_item_alphabetical_order(only_listed: bool = False):
 
         subquery = (
             select(
-                Item.id,
+                Item.item_id,
                 func.row_number()
                 .over(order_by=func.lower(Item.full_name).collate("C"))
                 .label("rn"),
-            ).where(Item.is_listed == only_listed)
+            )
         ).alias("subquery")
 
         update_stmt = (
             update(Item)
             .values(alphabetical_order=subquery.c.rn)
-            .where(subquery.c.id == Item.id)
+            .where(subquery.c.item_id == Item.item_id)
         )
         # print(str(update_stmt))
 

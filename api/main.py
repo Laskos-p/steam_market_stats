@@ -9,12 +9,12 @@ from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
 from .database import engine, get_db
-from .games import models as game_model
-from .games.crud import add_game_data
-from .games.router import router as games_router
+# from .games import models as game_model
+# from .games.crud import add_game_data
+# from .games.router import router as games_router
 
 models.Base.metadata.create_all(bind=engine)
-game_model.Base.metadata.create_all(bind=engine)
+# game_model.Base.metadata.create_all(bind=engine)
 
 
 @asynccontextmanager
@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(games_router)
+# app.include_router(games_router)
 
 origins = [
     "http://localhost:3000",
@@ -52,7 +52,7 @@ app.add_middleware(
 
 async def fetch_data():
     args = ()
-    await add_game_data(730)
+    # await add_game_data(730)
     while True:
         print("Fetching data...")
         time = time_ns()
