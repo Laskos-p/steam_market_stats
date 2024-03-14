@@ -1,5 +1,4 @@
-import { Link, NavLink, NavLinkProps } from "react-router-dom";
-import clsx from "clsx/lite";
+import { Link } from "@tanstack/react-router";
 
 const Navbar = () => {
   return (
@@ -9,33 +8,28 @@ const Navbar = () => {
       </Link>
       <nav>
         <ul className="flex h-full gap-4">
-          <li>
-            <CustomLink to="/">Home</CustomLink>
-          </li>
-          <li>
-            <CustomLink to="/items">Items</CustomLink>
-          </li>
+          {(
+            [
+              ["/", "Home"],
+              ["/items", "Items"],
+            ] as const
+          ).map(([to, label]) => (
+            <li key={to}>
+              <Link
+                to={to}
+                className="grid aspect-video items-center px-4 hover:bg-[#777] focus-visible:bg-[#777]"
+                activeProps={{
+                  className: "bg-[#555]",
+                }}
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
     </div>
   );
 };
-
-function CustomLink({ to, children, ...props }: NavLinkProps) {
-  return (
-    <NavLink
-      to={to}
-      {...props}
-      className={({ isActive }) =>
-        clsx(
-          "grid aspect-video items-center px-4 hover:bg-[#777] focus-visible:bg-[#777]",
-          isActive && "bg-[#555]",
-        )
-      }
-    >
-      {children}
-    </NavLink>
-  );
-}
 
 export default Navbar;

@@ -25,4 +25,4 @@ export default {
 
 type Story = StoryObj<typeof Item>;
 
-export const DefaultItem: Story = {};
+export const Default: Story = {};

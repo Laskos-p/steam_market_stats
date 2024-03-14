@@ -3,7 +3,7 @@ import * as stories from "./Item.stories";
 import ItemList from "../ItemList";
 import { ItemInfo } from "../../lib/types/ItemInfo";
 
-const { DefaultItem } = composeStories(stories);
+const { Default: DefaultItem } = composeStories(stories);
 
 export default {
   title: "ItemList",
@@ -12,8 +12,8 @@ export default {
   args: {
     data: Array.from({ length: 5 }, (_, i) => ({
       id: i,
-      ...DefaultItem.args,
-    })) as ItemInfo[],
+      ...(DefaultItem.args as Omit<ItemInfo, "id">),
+    })),
   },
 } satisfies Meta<typeof ItemList>;
 

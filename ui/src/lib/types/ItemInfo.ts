@@ -23,3 +23,4 @@ export const ItemInfoSchema = z
   .strict();
 
 export type ItemInfo = z.infer<typeof ItemInfoSchema>;
+export default ItemInfo;
